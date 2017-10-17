@@ -215,7 +215,7 @@ event pfc_itemfocuschanged(long al_row, ref dwobject adwo_object);//////////////
 // 12.5  When used with DDLB edit style, this service was not always correctly
 //       processing the user's initial keystroke. This was due to instance var
 //       is_textprev not being properly initialized in this event.
-//
+// 17.0 Fixed 12.5 change by incrementing column index at the beginning of the loop. 
 //////////////////////////////////////////////////////////////////////////////
 //
 /*
@@ -291,6 +291,8 @@ Else
 	li_ddlb_index = 0
 	// Search the ddlb's Code Table for a data value match.
 	Do
+                // Increment column index.
+	        li_ddlb_index++
 		ls_ddlb_codetableentry = idw_requestor.GetValue(ls_dwcolname, li_ddlb_index)
 		If ls_ddlb_codetableentry = '' Then
 			// No match found.
@@ -300,15 +302,13 @@ Else
 		li_tabpos = Pos(ls_ddlb_codetableentry, '~t')
 		ls_ddlb_displayvalue = LeftTrim(Mid(ls_ddlb_codetableentry, 1, li_tabpos - 1))
 		ls_ddlb_datavalue    = LeftTrim(Mid(ls_ddlb_codetableentry, li_tabpos + 1))
-		// Increment column index.
-		li_ddlb_index++
 		// Is this code table's data value a match?
-		If Lower(ls_textvalue) = Lower(ls_ddlb_datavalue) Then
+	        If Lower(ls_textvalue) = Lower(ls_ddlb_datavalue) Then
 			lb_matchfound = True
 		Else
 			lb_matchfound = False
 		End If
-	Loop Until lb_matchfound Or li_ddlb_index = li_numtabs
+	Loop Until lb_matchfound Or li_ddlb_index >= li_numta
 	// Set initial value for "previous text" if a match was found.
 	If lb_matchfound Then
 		is_textprev = ls_ddlb_displayvalue
